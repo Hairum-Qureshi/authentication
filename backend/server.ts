@@ -21,10 +21,6 @@ app.use(express.urlencoded({ extended: true })); // <-- without this, you won't 
 
 const PORT: string | number = process.env.PORT || 9000;
 
-app.get("/", (req, res) => {
-	res.send("Hello");
-});
-
 app.listen(PORT, () => {
 	console.log(
 		chalk.bold(chalk.yellowBright(`Server listening on port ${PORT}!`))
