@@ -4,17 +4,17 @@ export default function SignIn() {
 			<input
 				type="email"
 				placeholder="Email"
-				className="rounded-md p-3 bg-slate-800 outline-none"
+				className="rounded-md p-3 bg-slate-800 outline-none focus:outline-none focus:border-sky-500 focus:border"
 			/>
 			<input
 				type="password"
 				placeholder="Password"
-				className="rounded-md p-3 bg-slate-800 outline-none"
+				className="rounded-md p-3 bg-slate-800 outline-none focus:outline-none focus:border-sky-500 focus:border"
 			/>
 
 			<button
 				type="submit"
-				className="flex w-full p-2 justify-center rounded-md bg-sky-600"
+				className="flex w-full p-2 justify-center rounded-md bg-sky-600 hover:cursor-pointer"
 			>
 				Sign In
 			</button>
