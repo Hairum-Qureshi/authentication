@@ -1,0 +1,39 @@
+import { Schema, model } from "mongoose";
+import { IUser } from "../interfaces";
+
+const userSchema = new Schema(
+	{
+		_id: {
+			type: String,
+			unique: true,
+			required: true
+		},
+		firstName: {
+			type: String,
+			required: true
+		},
+		lastName: {
+			type: String,
+			required: true
+		},
+		profile_picture: {
+			type: String,
+			default:
+				"https://i.pinimg.com/originals/e5/9e/51/e59e51dcbba47985a013544769015f25.jpg"
+		},
+		email: {
+			type: String,
+			required: true,
+			unique: true
+		},
+		password: {
+			type: String,
+			required: true
+		}
+	},
+	{
+		timestamps: true
+	}
+);
+
+export default model<IUser>("User", userSchema);
