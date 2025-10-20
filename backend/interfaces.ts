@@ -4,7 +4,7 @@ interface IUser {
 	lastName: string;
 	email: string;
 	profilePicture: string;
-	password?: string;
+	password?: string | undefined;
 	createdAt: Date;
 	updatedAt: Date;
 }
