@@ -1,7 +1,6 @@
 import express from "express";
 import {
-	getCurrentUser,
-	getStatus,
+	getAuthStatus,
 	reset2FA,
 	setup2FA,
 	signIn,
@@ -17,10 +16,9 @@ const router = express.Router();
 router.post("/sign-up", signUp);
 router.post("/sign-in", passport.authenticate("local"), signIn);
 router.post("/sign-out", signOut);
-router.get("/status", getStatus);
+router.get("/status", getAuthStatus);
 router.get("/2fa/setup", setup2FA);
 router.post("/2fa/verify", verify2FA);
 router.post("/2fa/reset", reset2FA);
-router.get("/current-user", getCurrentUser);
 
 export default router;
