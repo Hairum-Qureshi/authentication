@@ -5,6 +5,9 @@ interface IUser {
 	email: string;
 	profilePicture: string;
 	password?: string | undefined;
+	isMFAEnabled: boolean;
+	isGoogleAccount: boolean;
+	twoFactorSecret?: string | undefined;
 	createdAt: Date;
 	updatedAt: Date;
 }
