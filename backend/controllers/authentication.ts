@@ -70,7 +70,17 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 
 const signIn = async (req: Request, res: Response): Promise<void> => {
 	try {
-		console.log(req.user);
+		const userData = req.user as IUser;
+
+		res.status(200).json({
+			message: "Sign in successful",
+			email: userData.email,
+			// firstName: userData.firstName,
+			// lastName: userData.lastName,
+			// _id: userData._id,
+			isMFAEnabled: userData.isMFAEnabled
+		});
+
 		// 1. Generate token (JWT)
 		// 2. Remove password before sending response
 		// 3. Respond with user and token
@@ -87,6 +97,25 @@ const signIn = async (req: Request, res: Response): Promise<void> => {
 
 const signOut = async (req: Request, res: Response): Promise<void> => {
 	try {
+		if (!req.user) {
+			res.status(401).json({ message: "Already signed out" });
+		}
+
+		req.logout(err => {
+			if (err) {
+				console.log(
+					chalk.bold(
+						chalk.redBright(
+							"Error during logout in signOut function controller, authentication.ts file: ",
+							err
+						)
+					)
+				);
+				res.status(500).json({ message: "Error during sign out" });
+				return;
+			}
+			res.status(200).json({ message: "Sign out successful" });
+		});
 	} catch (error) {
 		console.log(
 			chalk.bold(
@@ -98,13 +127,28 @@ const signOut = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-const getStatus = async (req: Request, res: Response): Promise<void> => {
+const getAuthStatus = async (req: Request, res: Response): Promise<void> => {
 	try {
+		if (!req.user) {
+			res.status(200).json({ isAuthenticated: false });
+			return;
+		} else {
+			const userData = req.user as IUser;
+
+			res.status(200).json({
+				isAuthenticated: true,
+				email: userData.email,
+				// firstName: userData.firstName,
+				// lastName: userData.lastName,
+				// _id: userData._id,
+				isMFAEnabled: userData.isMFAEnabled
+			});
+		}
 	} catch (error) {
 		console.log(
 			chalk.bold(
 				chalk.redBright(
-					"Error in get status function controller, authentication.ts file"
+					"Error in get getAuthStatus function controller, authentication.ts file"
 				)
 			)
 		);
@@ -150,26 +194,12 @@ const reset2FA = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
-	try {
-	} catch (error) {
-		console.log(
-			chalk.bold(
-				chalk.redBright(
-					"Error in get current user function controller, authentication.ts file"
-				)
-			)
-		);
-	}
-};
-
 export {
 	signUp,
 	signIn,
 	signOut,
-	getStatus,
+	getAuthStatus,
 	setup2FA,
 	verify2FA,
-	reset2FA,
-	getCurrentUser
+	reset2FA
 };
