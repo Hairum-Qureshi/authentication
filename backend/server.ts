@@ -7,6 +7,8 @@ import session from "express-session";
 import passport from "passport";
 import authentication from "./routes/authentication";
 import mongoose from "mongoose";
+import { IUser } from "./interfaces";
+import User from "./models/User";
 
 dotenv.config();
 
@@ -38,6 +40,24 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+	done(null, (user as IUser)._id);
+});
+
+passport.deserializeUser(async (uid, done) => {
+	try {
+		const user: IUser | null = await User.findById(uid).select("-password");
+
+		if (!user) {
+			return done(new Error("User not found during deserialization"));
+		}
+
+		done(null, user);
+	} catch (err) {
+		done(err);
+	}
+});
 
 app.use("/api", authentication);
 
