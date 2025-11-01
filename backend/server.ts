@@ -23,16 +23,19 @@ app.use(cookieParser()); // <-- allows you to read req.cookies
 app.use(express.json()); // <-- without this, req.body won't work (for JSON data being passed to the backend)
 app.use(express.urlencoded({ extended: true })); // <-- without this, you won't be able to read form data
 app.use(
-	"session",
 	session({
 		secret: process.env.EXPRESS_SESSION_SECRET!,
 		resave: false,
 		saveUninitialized: false,
 		cookie: {
-			maxAge: 7 * 24 * 60 * 60 * 1000
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+			secure: process.env.NODE_ENV === "production",
+			httpOnly: true,
+			sameSite: "lax"
 		}
 	})
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 
