@@ -10,6 +10,7 @@ import {
 } from "../controllers/authentication";
 import passport from "passport";
 import "../config/passport-config";
+import isAuthenticated from "../middleware/isAuthenticated";
 
 const router = express.Router();
 
@@ -17,8 +18,8 @@ router.post("/sign-up", signUp);
 router.post("/sign-in", passport.authenticate("local"), signIn);
 router.post("/sign-out", signOut);
 router.get("/status", getAuthStatus);
-router.get("/2fa/setup", setup2FA);
-router.post("/2fa/verify", verify2FA);
-router.post("/2fa/reset", reset2FA);
+router.get("/2fa/setup", isAuthenticated, setup2FA);
+router.post("/2fa/verify", isAuthenticated, verify2FA);
+router.post("/2fa/reset", isAuthenticated, reset2FA);
 
 export default router;
