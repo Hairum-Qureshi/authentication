@@ -26,19 +26,6 @@ passport.use(
 				if (!isMatch)
 					return done(null, false, { message: "Incorrect password" });
 
-				passport.serializeUser((user, done) => {
-					done(null, (user as IUser)._id);
-				});
-
-				passport.deserializeUser(async (uid, done) => {
-					try {
-						const user = await User.findById(uid);
-						done(null, user);
-					} catch (err) {
-						done(err);
-					}
-				});
-
 				return done(null, user);
 			} catch (error) {
 				return done(
