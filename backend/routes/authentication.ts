@@ -9,11 +9,13 @@ import {
 	signUp,
 	verify2FA
 } from "../controllers/authentication";
+import passport from "passport";
+import "../config/passport-config";
 
 const router = express.Router();
 
 router.post("/sign-up", signUp);
-router.post("/sign-in", signIn);
+router.post("/sign-in", passport.authenticate("local"), signIn);
 router.post("/sign-out", signOut);
 router.get("/status", getStatus);
 router.get("/2fa/setup", setup2FA);
