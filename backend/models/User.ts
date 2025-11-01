@@ -28,6 +28,17 @@ const userSchema = new Schema(
 		password: {
 			type: String,
 			required: true
+		},
+		isMFAEnabled: {
+			type: Boolean,
+			default: false
+		},
+		isGoogleAccount: {
+			type: Boolean,
+			default: false
+		},
+		twoFactorSecret: {
+			type: String
 		}
 	},
 	{
