@@ -39,24 +39,28 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 
-		const user: IUser = new User({
-			id: crypto.randomUUID(),
+		const user = new User({
+			_id: crypto.randomUUID(),
 			firstName,
 			lastName,
-			email,
+			email: email.toLowerCase(),
 			password: hashedPassword
 		});
 
-		User.create();
+		// save the instance, not the Model
+		await user.save();
 
-		delete user.password;
+		// convert to plain object and remove password before sending
+		const safeUser = user.toObject();
+		delete (safeUser as Partial<IUser>).password;
 
-		res.status(201).send({ ...user, password });
+		res.status(201).send(safeUser);
 	} catch (error) {
 		console.log(
 			chalk.bold(
 				chalk.redBright(
-					"Error in sign up function controller, authentication.ts file"
+					"Error in sign up function controller, authentication.ts file: ",
+					error
 				)
 			)
 		);
@@ -66,32 +70,10 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 
 const signIn = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const { email, password } = req.body;
-
-		if (!email || !password) {
-			res
-				.status(422)
-				.json({ message: "Please provide both email and password" });
-			return;
-		}
-
-		const user: IUser | null = await User.findOne({ email });
-		if (!user) {
-			res.status(401).json({ message: "Invalid email or password" });
-			return;
-		}
-
-		const isMatch = await bcrypt.compare(password, user.password!);
-		if (!isMatch) {
-			res.status(401).json({ message: "Invalid email or password" });
-			return;
-		}
-
-		// 4. Generate token (JWT)
-
-		// 5. Remove password before sending response
-
-		// 6. Respond with user and token
+		console.log(req.user);
+		// 1. Generate token (JWT)
+		// 2. Remove password before sending response
+		// 3. Respond with user and token
 	} catch (error) {
 		console.log(
 			chalk.bold(
