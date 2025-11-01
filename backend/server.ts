@@ -40,25 +40,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.serializeUser((user, done) => {
-	done(null, (user as IUser)._id);
-});
-
-passport.deserializeUser(async (uid, done) => {
-	try {
-		const user: IUser | null = await User.findById(uid).select("-password");
-
-		if (!user) {
-			return done(new Error("User not found during deserialization"));
-		}
-
-		done(null, user);
-	} catch (err) {
-		done(err);
-	}
-});
-
 app.use("/api", authentication);
 
 const MONGO_URI: string = process.env.MONGO_URI!;
