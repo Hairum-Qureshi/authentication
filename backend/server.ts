@@ -7,8 +7,6 @@ import session from "express-session";
 import passport from "passport";
 import authentication from "./routes/authentication";
 import mongoose from "mongoose";
-import { IUser } from "./interfaces";
-import User from "./models/User";
 
 dotenv.config();
 

@@ -1,4 +1,6 @@
-interface IUser {
+import { Document } from "mongoose";
+
+type User = {
 	_id: string;
 	firstName: string;
 	lastName: string;
@@ -10,6 +12,7 @@ interface IUser {
 	twoFactorSecret?: string | undefined;
 	createdAt: Date;
 	updatedAt: Date;
-}
+};
 
-export type { IUser };
+type UserDocument = User & Document;
+export type { UserDocument };

@@ -1,9 +1,12 @@
 import chalk from "chalk";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { IUser } from "../interfaces";
+import { UserDocument } from "../interfaces";
 import User from "../models/User";
 import crypto from "crypto";
+import speakeasy from "speakeasy";
+import qrCode from "qrcode";
+import jwt from "jsonwebtoken";
 
 const signUp = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -30,9 +33,9 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
-		const existingUser: IUser | null = (await User.findOne({
+		const existingUser: UserDocument | null = (await User.findOne({
 			email
-		})) as IUser | null;
+		})) as UserDocument | null;
 
 		if (existingUser) {
 			res.status(500).send("User already exists with this email");
@@ -50,9 +53,10 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 		// save the instance, not the Model
 		await user.save();
 
+		// TODO - come back to this
 		// convert to plain object and remove password before sending
 		const safeUser = user.toObject();
-		delete (safeUser as Partial<IUser>).password;
+		delete (safeUser as Partial<UserDocument>).password;
 
 		res.status(201).send(safeUser);
 	} catch (error) {
@@ -70,7 +74,7 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 
 const signIn = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const userData = req.user as IUser;
+		const userData = req.user as UserDocument;
 
 		res.status(200).json({
 			message: "Sign in successful",
@@ -133,7 +137,7 @@ const getAuthStatus = async (req: Request, res: Response): Promise<void> => {
 			res.status(200).json({ isAuthenticated: false });
 			return;
 		} else {
-			const userData = req.user as IUser;
+			const userData = req.user as UserDocument;
 
 			res.status(200).json({
 				isAuthenticated: true,
@@ -157,6 +161,11 @@ const getAuthStatus = async (req: Request, res: Response): Promise<void> => {
 
 const setup2FA = async (req: Request, res: Response): Promise<void> => {
 	try {
+		const user = req.user as UserDocument;
+		const secret = speakeasy.generateSecret();
+		user.twoFactorSecret = secret.base32;
+		user.isMFAEnabled = true;
+		await user.save();
 	} catch (error) {
 		console.log(
 			chalk.bold(
@@ -165,6 +174,7 @@ const setup2FA = async (req: Request, res: Response): Promise<void> => {
 				)
 			)
 		);
+		res.status(500).json({ message: "Error setting up 2FA" });
 	}
 };
 

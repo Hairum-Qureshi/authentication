@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import User from "../models/User";
-import { IUser } from "../interfaces";
+import { UserDocument } from "../interfaces";
 import chalk from "chalk";
 
 passport.use(
@@ -16,9 +16,9 @@ passport.use(
 					});
 				}
 
-				const user: IUser | null = (await User.findOne({
+				const user: UserDocument | null = (await User.findOne({
 					email
-				})) as IUser | null;
+				})) as UserDocument | null;
 
 				if (!user) return done(null, false, { message: "User not found" });
 
@@ -38,12 +38,14 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-	done(null, (user as IUser)._id);
+	done(null, (user as UserDocument)._id);
 });
 
 passport.deserializeUser(async (uid, done) => {
 	try {
-		const user: IUser | null = await User.findById(uid).select("-password");
+		const user: UserDocument | null = await User.findById(uid).select(
+			"-password"
+		);
 
 		if (!user) {
 			return done(new Error("User not found during deserialization"));
