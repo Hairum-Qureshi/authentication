@@ -189,6 +189,28 @@ const setup2FA = async (req: Request, res: Response): Promise<void> => {
 
 const verify2FA = async (req: Request, res: Response): Promise<void> => {
 	try {
+		const { token } = req.body;
+		const user = req.user as UserDocument;
+		const verified = speakeasy.totp.verify({
+			secret: user.twoFactorSecret as string,
+			encoding: "base32",
+			token
+		});
+
+		if (verified) {
+			const jwtToken = jwt.sign(
+				{
+					id: user._id,
+					email: user.email
+				},
+				process.env.JWT_SECRET as string,
+				{ expiresIn: "7d" }
+			);
+
+			res.status(200).json({ message: "2FA verified", token: jwtToken });
+		} else {
+			res.status(400).json({ message: "Invalid 2FA token" });
+		}
 	} catch (error) {
 		console.log(
 			chalk.bold(
