@@ -166,6 +166,15 @@ const setup2FA = async (req: Request, res: Response): Promise<void> => {
 		user.twoFactorSecret = secret.base32;
 		user.isMFAEnabled = true;
 		await user.save();
+		const url = speakeasy.otpauthURL({
+			secret: secret.base32,
+			label: user.email,
+			issuer: "Authentication Demo App",
+			encoding: "base32"
+		});
+
+		const qrImageURL = await qrCode.toDataURL(url);
+		res.status(200).json({ qrImageURL });
 	} catch (error) {
 		console.log(
 			chalk.bold(
