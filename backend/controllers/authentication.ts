@@ -107,10 +107,12 @@ const googleFirebaseOAuthHandler = async (
 ): Promise<void> => {
 	{
 		try {
-			const { idToken } = req.body;
+			const idToken = req.headers.authorization as string;
 
 			// Verify the ID token with Firebase Admin SDK
-			const decodedToken = await admin.auth().verifyIdToken(idToken);
+			const decodedToken = await admin
+				.auth()
+				.verifyIdToken(idToken.replace("Bearer ", ""));
 			const { email, name, uid } = decodedToken;
 
 			// Check if user exists in the database
@@ -136,6 +138,8 @@ const googleFirebaseOAuthHandler = async (
 				}
 				res.status(200).json({
 					message: "Google sign-in successful",
+					fullName: `${user.firstName} ${user.lastName}`,
+					id: user._id,
 					email: user.email,
 					isMFAEnabled: user.isMFAEnabled
 				});
