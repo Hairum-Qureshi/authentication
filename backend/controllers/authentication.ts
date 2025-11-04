@@ -7,6 +7,7 @@ import crypto from "crypto";
 import speakeasy from "speakeasy";
 import qrCode from "qrcode";
 import jwt from "jsonwebtoken";
+import admin from "../config/firebase-config";
 
 const signUp = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -53,6 +54,7 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 		// save the instance, not the Model
 		await user.save();
 
+		// TODO - there doesn't seem to be any code for creating the cookie here
 		// TODO - come back to this
 		// convert to plain object and remove password before sending
 		const safeUser = user.toObject();
@@ -96,6 +98,59 @@ const signIn = async (req: Request, res: Response): Promise<void> => {
 				)
 			)
 		);
+	}
+};
+
+const googleFirebaseOAuthHandler = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	{
+		try {
+			const { idToken } = req.body;
+
+			// Verify the ID token with Firebase Admin SDK
+			const decodedToken = await admin.auth().verifyIdToken(idToken);
+			const { email, name, uid } = decodedToken;
+
+			// Check if user exists in the database
+			let user: UserDocument | null = (await User.findOne({
+				email
+			})) as UserDocument | null;
+
+			if (!user) {
+				// If user doesn't exist, create a new user
+				user = new User({
+					_id: uid,
+					email,
+					firstName: name?.split(" ")[0] || "",
+					lastName: name?.split(" ").slice(1).join(" ") || "",
+					password: crypto.randomBytes(16).toString("hex") // Random password
+				});
+				await user.save();
+			}
+
+			req.login(user, err => {
+				if (err) {
+					throw err;
+				}
+				res.status(200).json({
+					message: "Google sign-in successful",
+					email: user.email,
+					isMFAEnabled: user.isMFAEnabled
+				});
+			});
+		} catch (error) {
+			console.log(
+				chalk.bold(
+					chalk.redBright(
+						"Error in Google Firebase OAuth handler, authentication.ts file: ",
+						error
+					)
+				)
+			);
+			res.status(400).json({ message: "Google sign-in failed", error });
+		}
 	}
 };
 
@@ -224,6 +279,11 @@ const verify2FA = async (req: Request, res: Response): Promise<void> => {
 
 const reset2FA = async (req: Request, res: Response): Promise<void> => {
 	try {
+		const user = req.user as UserDocument;
+		user.twoFactorSecret = "";
+		user.isMFAEnabled = false;
+		await user.save();
+		res.status(200).json({ message: "2FA has been reset" });
 	} catch (error) {
 		console.log(
 			chalk.bold(
@@ -238,6 +298,7 @@ const reset2FA = async (req: Request, res: Response): Promise<void> => {
 export {
 	signUp,
 	signIn,
+	googleFirebaseOAuthHandler,
 	signOut,
 	getAuthStatus,
 	setup2FA,
