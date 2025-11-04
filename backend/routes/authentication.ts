@@ -1,6 +1,7 @@
 import express from "express";
 import {
 	getAuthStatus,
+	googleFirebaseOAuthHandler,
 	reset2FA,
 	setup2FA,
 	signIn,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.post("/sign-up", signUp);
 router.post("/sign-in", passport.authenticate("local"), signIn);
+router.post("/google-auth", googleFirebaseOAuthHandler);
 router.post("/sign-out", signOut);
 router.get("/status", getAuthStatus);
 router.get("/2fa/setup", isAuthenticated, setup2FA);
