@@ -3,9 +3,11 @@ import SignUp from "../SignUp";
 import forestImage from "../../assets/forest.png";
 import { FaGoogle } from "react-icons/fa";
 import { useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 export default function Landing() {
 	const [currentForm, setCurrentForm] = useState("sign-up");
+	const { handleGoogleSignIn } = useAuth();
 
 	return (
 		<div className="w-full min-h-screen max-h-auto bg-black text-white">
@@ -55,11 +57,14 @@ export default function Landing() {
 							<span className="mx-4 text-slate-500">or</span>
 							<div className="flex-grow border-t border-slate-500"></div>
 						</div>
-						<button className="w-full rounded-md p-[1px] bg-gradient-to-r from-blue-500 to-purple-500 hover:cursor-pointer">
+						<button
+							className="w-full rounded-md p-[1px] bg-gradient-to-r from-blue-500 to-purple-500 hover:cursor-pointer"
+							onClick={() => handleGoogleSignIn()}
+						>
 							<p className="flex w-full items-center rounded-md bg-slate-800 p-2 text-white justify-center">
 								<span className="mr-2">
 									<FaGoogle />
-								</span> 
+								</span>
 								Sign {currentForm === "sign-up" ? "Up" : "In"} With Google
 							</p>
 						</button>
