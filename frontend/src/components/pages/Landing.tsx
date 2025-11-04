@@ -59,7 +59,7 @@ export default function Landing() {
 							<p className="flex w-full items-center rounded-md bg-slate-800 p-2 text-white justify-center">
 								<span className="mr-2">
 									<FaGoogle />
-								</span>
+								</span> 
 								Sign {currentForm === "sign-up" ? "Up" : "In"} With Google
 							</p>
 						</button>
