@@ -295,6 +295,28 @@ const reset2FA = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const user = req.user as UserDocument;
+		res.status(200).json({
+			email: user.email,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			_id: user._id,
+			isMFAEnabled: user.isMFAEnabled
+		});
+	} catch (error) {
+		console.log(
+			chalk.bold(
+				chalk.redBright(
+					"Error in getCurrentUser function controller, authentication.ts file"
+				)
+			)
+		);
+		res.status(500).json({ message: "Error retrieving current user" });
+	}
+};
+
 export {
 	signUp,
 	signIn,
@@ -303,5 +325,6 @@ export {
 	getAuthStatus,
 	setup2FA,
 	verify2FA,
-	reset2FA
+	reset2FA,
+	getCurrentUser
 };
