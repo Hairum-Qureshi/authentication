@@ -1,6 +1,7 @@
 import express from "express";
 import {
 	getAuthStatus,
+	getCurrentUser,
 	googleFirebaseOAuthHandler,
 	reset2FA,
 	setup2FA,
@@ -23,5 +24,6 @@ router.get("/status", getAuthStatus);
 router.get("/2fa/setup", isAuthenticated, setup2FA);
 router.post("/2fa/verify", isAuthenticated, verify2FA);
 router.post("/2fa/reset", isAuthenticated, reset2FA);
+router.get("/current-user", isAuthenticated, getCurrentUser);
 
 export default router;
