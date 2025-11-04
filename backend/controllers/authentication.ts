@@ -9,6 +9,18 @@ import qrCode from "qrcode";
 import jwt from "jsonwebtoken";
 import admin from "../config/firebase-config";
 
+function createJWTToken(user: UserDocument): string {
+	const jwtToken = jwt.sign(
+		{
+			id: user._id,
+			email: user.email
+		},
+		process.env.JWT_SECRET as string,
+		{ expiresIn: "7d" }
+	);
+	return jwtToken;
+}
+
 const signUp = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { firstName, lastName, email, password, confirmedPassword } =
@@ -136,10 +148,11 @@ const googleFirebaseOAuthHandler = async (
 				if (err) {
 					throw err;
 				}
+
 				res.status(200).json({
 					message: "Google sign-in successful",
-					fullName: `${user.firstName} ${user.lastName}`,
 					id: user._id,
+					fullName: `${user.firstName} ${user.lastName}`,
 					email: user.email,
 					isMFAEnabled: user.isMFAEnabled
 				});
@@ -257,14 +270,7 @@ const verify2FA = async (req: Request, res: Response): Promise<void> => {
 		});
 
 		if (verified) {
-			const jwtToken = jwt.sign(
-				{
-					id: user._id,
-					email: user.email
-				},
-				process.env.JWT_SECRET as string,
-				{ expiresIn: "7d" }
-			);
+			const jwtToken = createJWTToken(user);
 
 			res.status(200).json({ message: "2FA verified", token: jwtToken });
 		} else {
@@ -303,10 +309,9 @@ const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const user = req.user as UserDocument;
 		res.status(200).json({
-			email: user.email,
-			firstName: user.firstName,
-			lastName: user.lastName,
 			_id: user._id,
+			email: user.email,
+			fullName: `${user.firstName} ${user.lastName}`,
 			isMFAEnabled: user.isMFAEnabled
 		});
 	} catch (error) {
