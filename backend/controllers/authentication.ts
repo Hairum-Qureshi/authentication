@@ -125,7 +125,7 @@ const googleFirebaseOAuthHandler = async (
 			const decodedToken = await admin
 				.auth()
 				.verifyIdToken(idToken.replace("Bearer ", ""));
-			const { email, name, uid } = decodedToken;
+			const { email, name, uid, picture } = decodedToken;
 
 			// Check if user exists in the database
 			let user: UserDocument | null = (await User.findOne({
@@ -139,6 +139,8 @@ const googleFirebaseOAuthHandler = async (
 					email,
 					firstName: name?.split(" ")[0] || "",
 					lastName: name?.split(" ").slice(1).join(" ") || "",
+					isGoogleAccount: true,
+					profile_picture: picture,
 					password: crypto.randomBytes(16).toString("hex") // Random password
 				});
 				await user.save();
@@ -153,6 +155,7 @@ const googleFirebaseOAuthHandler = async (
 					message: "Google sign-in successful",
 					id: user._id,
 					fullName: `${user.firstName} ${user.lastName}`,
+					profile_picture: user.profile_picture,
 					email: user.email,
 					isMFAEnabled: user.isMFAEnabled
 				});
