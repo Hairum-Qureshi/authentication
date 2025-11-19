@@ -315,6 +315,7 @@ const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
 			_id: user._id,
 			email: user.email,
 			fullName: `${user.firstName} ${user.lastName}`,
+			profile_picture: user.profile_picture,
 			isMFAEnabled: user.isMFAEnabled
 		});
 	} catch (error) {
