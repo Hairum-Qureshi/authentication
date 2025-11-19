@@ -10,7 +10,6 @@ interface UseAuthReturn {
 		firstName: string,
 		lastName: string,
 		email: string,
-		profile_picture: string,
 		password: string,
 		confirmedPassword: string
 	) => void;
