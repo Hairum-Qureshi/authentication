@@ -5,7 +5,7 @@ type User = {
 	firstName: string;
 	lastName: string;
 	email: string;
-	profilePicture: string;
+	profile_picture: string;
 	password?: string | undefined;
 	isMFAEnabled: boolean;
 	isGoogleAccount: boolean;
