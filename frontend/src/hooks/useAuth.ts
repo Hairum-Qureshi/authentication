@@ -163,7 +163,7 @@ export default function useAuth(): UseAuthReturn {
 		onSuccess: () => {
 			navigate("/");
 
-			queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+			queryClient.removeQueries({ queryKey: ["currentUser"] });
 		}
 	});
 
