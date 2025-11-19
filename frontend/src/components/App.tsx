@@ -17,7 +17,6 @@ export default function App() {
 						</ProtectedRoutesGuard>
 					}
 				/>
-				;
 				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</BrowserRouter>
