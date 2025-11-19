@@ -163,7 +163,6 @@ export default function useAuth(): UseAuthReturn {
 		onSuccess: () => {
 			navigate("/");
 
-			// delete  cached user data here that's saved in react query
 			queryClient.invalidateQueries({ queryKey: ["currentUser"] });
 		}
 	});
@@ -172,7 +171,6 @@ export default function useAuth(): UseAuthReturn {
 		signOutMutation();
 	};
 
-	// create mutation calling the 2fa set up endpoint
 	const { mutate: twoFaSetupMutation } = useMutation({
 		mutationFn: async () => {
 			try {
@@ -224,7 +222,6 @@ export default function useAuth(): UseAuthReturn {
 		twoFaVerifyMutation(code);
 	};
 
-	// set up reset 2fa mutation here
 	const { mutate: resetTwoFaMutation } = useMutation({
 		mutationFn: async () => {
 			try {
