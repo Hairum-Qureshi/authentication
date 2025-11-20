@@ -1,6 +1,6 @@
 import { signInWithPopup } from "@firebase/auth";
 import { auth, googleProvider } from "../config/firebase";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ interface UseAuthReturn {
 	) => void;
 	signIn: (email: string, password: string) => void;
 	signOut: () => void;
-	twoFaSetup: () => void;
+	twoFaSetupData: { qrImageURL: string } | undefined;
 	twoFaVerify: (code: string) => void;
 	resetTwoFa: () => void;
 }
@@ -171,26 +171,19 @@ export default function useAuth(): UseAuthReturn {
 		signOutMutation();
 	};
 
-	const { mutate: twoFaSetupMutation } = useMutation({
-		mutationFn: async () => {
-			try {
-				const response = await axios.get(
-					`${import.meta.env.VITE_BACKEND_URL}/api/2fa/setup`,
-					{
-						withCredentials: true
-					}
-				);
+	const { data: twoFaSetupData } = useQuery<{ qrImageURL: string }>({
+		queryKey: ["2faSetup"],
+		queryFn: async () => {
+			const response = await axios.get<{ qrImageURL: string }>(
+				`${import.meta.env.VITE_BACKEND_URL}/api/2fa/setup`,
+				{
+					withCredentials: true
+				}
+			);
 
-				return response;
-			} catch (error) {
-				console.error(error);
-			}
+			return response.data;
 		}
 	});
-
-	const twoFaSetup = () => {
-		twoFaSetupMutation();
-	};
 
 	const { mutate: twoFaVerifyMutation } = useMutation({
 		mutationFn: async (code: string) => {
@@ -249,7 +242,7 @@ export default function useAuth(): UseAuthReturn {
 		signUp,
 		signIn,
 		signOut,
-		twoFaSetup,
+		twoFaSetupData,
 		twoFaVerify,
 		resetTwoFa
 	};
