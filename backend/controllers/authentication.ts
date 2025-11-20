@@ -36,7 +36,7 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]/;
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 		if (!emailRegex.test(email)) {
 			res.status(400).json({ message: "Invalid email" });
@@ -51,7 +51,7 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 		})) as UserDocument | null;
 
 		if (existingUser) {
-			res.status(500).send("User already exists with this email");
+			res.status(409).send("User already exists with this email");
 			return;
 		}
 
@@ -66,13 +66,19 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
 		// save the instance, not the Model
 		await user.save();
 
-		// TODO - there doesn't seem to be any code for creating the cookie here
-		// TODO - come back to this
-		// convert to plain object and remove password before sending
-		const safeUser = user.toObject();
-		delete (safeUser as Partial<UserDocument>).password;
+		req.login(user, err => {
+			if (err) {
+				console.error(err);
+				res.status(500).send("Error logging in after sign-up");
+				return;
+			}
 
-		res.status(201).send(safeUser);
+			// convert to plain object and remove password before sending
+			const safeUser = user.toObject();
+			delete safeUser.password;
+
+			res.status(201).json(safeUser);
+		});
 	} catch (error) {
 		console.log(
 			chalk.bold(
@@ -249,7 +255,7 @@ const setup2FA = async (req: Request, res: Response): Promise<void> => {
 		});
 
 		const qrImageURL = await qrCode.toDataURL(url);
-		res.status(200).json({ qrImageURL });
+		res.status(200).json({ qrImageURL, secret: secret.base32 });
 	} catch (error) {
 		console.log(
 			chalk.bold(
