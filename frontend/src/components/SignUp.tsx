@@ -11,7 +11,13 @@ export default function SignUp() {
 	const [confirmedPassword, setConfirmedPassword] = useState("");
 
 	return (
-		<form className="mt-8">
+		<form
+			className="mt-8"
+			onSubmit={e => {
+				e.preventDefault();
+				signUp(firstName, lastName, email, password, confirmedPassword);
+			}}
+		>
 			<div className="flex flex-col space-y-7">
 				<div className="flex items-center space-x-2">
 					<input
@@ -54,10 +60,6 @@ export default function SignUp() {
 			<button
 				type="submit"
 				className="flex w-full p-2 justify-center rounded-md bg-sky-600 hover:cursor-pointer"
-				onClick={e => {
-					e.preventDefault();
-					signUp(firstName, lastName, email, password, confirmedPassword);
-				}}
 			>
 				Create Account
 			</button>
