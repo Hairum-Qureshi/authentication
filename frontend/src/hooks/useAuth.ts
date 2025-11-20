@@ -88,7 +88,7 @@ export default function useAuth(): UseAuthReturn {
 			}
 		},
 		onSuccess: () => {
-			navigate("/profile");
+			navigate("/setup-2fa");
 		}
 	});
 
