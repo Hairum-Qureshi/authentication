@@ -13,7 +13,7 @@ export default function ProtectedRoutesGuard({
 		return <Navigate to="/" />;
 	}
 
-	if (!userData.isTwoFAEnabled) {
+	if (!userData.isMFAEnabled) {
 		return <Navigate to="/setup-2fa" />;
 	}
 
