@@ -7,10 +7,14 @@ export default function ProtectedRoutesGuard({
 }: {
 	children: ReactNode;
 }) {
-	const { data: userData, isPending } = useCurrentUser(); 
+	const { data: userData, isPending } = useCurrentUser();
 
 	if (!userData && !isPending) {
 		return <Navigate to="/" />;
+	}
+
+	if (!userData.isTwoFAEnabled) {
+		return <Navigate to="/setup-2fa" />;
 	}
 
 	return <>{children}</>;
