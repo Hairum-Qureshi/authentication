@@ -8,7 +8,13 @@ export default function SignIn() {
 	const [password, setPassword] = useState("");
 
 	return (
-		<form className="my-8">
+		<form
+			className="my-8"
+			onSubmit={e => {
+				e.preventDefault();
+				signIn(email, password);
+			}}
+		>
 			<div className="flex flex-col space-y-7 ">
 				<input
 					type="email"
@@ -28,10 +34,6 @@ export default function SignIn() {
 			<button
 				type="submit"
 				className="flex w-full p-2 justify-center rounded-md bg-sky-600 hover:cursor-pointer"
-				onClick={e => {
-					e.preventDefault();
-					signIn(email, password);
-				}}
 			>
 				Sign In
 			</button>
