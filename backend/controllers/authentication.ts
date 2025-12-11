@@ -322,7 +322,8 @@ const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
 			email: user.email,
 			fullName: `${user.firstName} ${user.lastName}`,
 			profile_picture: user.profile_picture,
-			isMFAEnabled: user.isMFAEnabled
+			isMFAEnabled: user.isMFAEnabled,
+			isGoogleAccount: user.isGoogleAccount
 		});
 	} catch (error) {
 		console.log(
